@@ -20,6 +20,8 @@ public class dancer_behavior_tree : MonoBehaviour
     // Use this for initialization
     void Start ()
 	{
+		
+		wander1.position = new Vector3(UnityEngine.Random.Range(10, 20), 0, UnityEngine.Random.Range(-10, 20)); 
         dancers = GameObject.FindGameObjectsWithTag("dancer");
         behaviorAgent = new BehaviorAgent (this.BuildTreeRoot ());
 		BehaviorManager.Instance.Register (behaviorAgent);
