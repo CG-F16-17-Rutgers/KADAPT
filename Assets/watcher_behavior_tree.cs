@@ -36,6 +36,11 @@ public class watcher_behavior_tree : MonoBehaviour {
         Val<Vector3> position = Val.V(() => target.position);
         return new Sequence(participant.GetComponent<BehaviorMecanim>().Node_GoTo(position), new LeafWait(1000));
     }
+    protected Node ST_ApproachAndLook(Transform target)
+    {
+        Val<Vector3> position = Val.V(() => target.position);
+        return new Sequence(participant.GetComponent<BehaviorMecanim>().Node_GoToUpToRadius(position,new Val<float>(5)), participant.GetComponent<BehaviorMecanim>().Node_OrientTowards(position), new LeafWait(1000));
+    }
     protected Node ST_Watch()
     {
         int duration = 0;
@@ -71,16 +76,11 @@ public class watcher_behavior_tree : MonoBehaviour {
         Func<bool> act = () => (police.transform.position.z > 10);
         Node roaming = new DecoratorLoop(
             new Sequence(
-                this.ST_ApproachAndWait(this.wander1),
-                 this.ST_ApproachAndWait(this.wander2),
-                 this.ST_ApproachAndWait(this.wander3),
-                 this.ST_ApproachAndWait(this.wander4),
-                 this.ST_ApproachAndWait(this.wander5),
-                 this.ST_ApproachAndWait(this.wander6),
-                 this.ST_ApproachAndWait(this.wander7)));
+                this.ST_ApproachAndLook(this.wander1)
+                 ));
 
         Node trigger = new DecoratorLoop(new LeafAssert(act));
-        Node root = new DecoratorLoop(new Selector(this.ST_Watch(),roaming)); 
+        Node root = new DecoratorLoop(roaming); 
         return root;
     }
 }

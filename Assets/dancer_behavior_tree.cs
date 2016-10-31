@@ -29,22 +29,20 @@ public class dancer_behavior_tree : MonoBehaviour
 	void Update ()
 	{
         bool dance = false;
-        foreach (GameObject dancer in dancers)
-        {
-            dance = (Vector3.Distance(dancer.transform.position, participant.transform.position) < 1) && dancer != participant;
+        
+            dance = (Vector3.Distance(participant.transform.position, wander1.position) < 2f);
             if (dance)
             {
                 Animator anim = participant.GetComponent<Animator>();
                 anim.SetBool("B_Breakdance",true);
-                Debug.Log(participant.name + "is dancing with " + dancer.name);
-                break;
+                //Debug.Log(participant.name + "is dancing with " + dancer.name);
+                
             }
-        }
     }
 
 	protected Node ST_ApproachAndWait(Transform target)
 	{
-		Val<Vector3> position = Val.V (() => target.position);
+		Val<Vector3> position = Val.V (() => target.position); 
         return new Sequence( participant.GetComponent<BehaviorMecanim>().Node_GoTo(position), new LeafWait(1000));
 	}
 
@@ -58,12 +56,14 @@ public class dancer_behavior_tree : MonoBehaviour
     {
         GameObject[] dancers = GameObject.FindGameObjectsWithTag("dancer");
         bool dance = false;
-        foreach (GameObject dancer in dancers)
+
+        dance = (Vector3.Distance(participant.transform.position, wander1.position) < 1);
+        if (dance)
         {
-            dance = Vector3.Distance(dancer.transform.position, participant.transform.position) < 1.5 && dancer != participant;
-            if (dance) {
-                Debug.Log(participant.name);
-                break; }
+            Animator anim = participant.GetComponent<Animator>();
+            anim.SetBool("B_Breakdance", true);
+            //Debug.Log(participant.name + "is dancing with " + dancer.name);
+
         }
         Func<bool> closeToDancer = () => (
           dance
@@ -84,15 +84,10 @@ public class dancer_behavior_tree : MonoBehaviour
 		Val<float> pp = Val.V (() => police.transform.position.z);
 		Func<bool> act = () => (police.transform.position.z > 10);
         Node roaming = new DecoratorLoop(
-            new SequenceShuffle(
-                this.ST_ApproachAndWait(this.wander1),
+            new Sequence(
                 this.ST_ApproachAndWait(this.wander2),
-                this.ST_ApproachAndWait(this.wander3),
-                this.ST_ApproachAndWait(this.wander4),
-                this.ST_ApproachAndWait(this.wander5),
-                this.ST_ApproachAndWait(this.wander6),
-                this.ST_ApproachAndWait(this.wander7)));
-        Node root = new DecoratorLoop ( new Selector(ST_BreakDance(), roaming)); 
+                this.ST_ApproachAndWait(this.wander1)));
+        Node root = new DecoratorLoop ( new Sequence(roaming,this.ST_BreakDance())); 
 		return root;
 	}
 }
