@@ -50,7 +50,7 @@ public class watcher_behavior_tree : MonoBehaviour {
         return new Sequence(participant.GetComponent<BehaviorMecanim>().Node_GoToUpToRadius(position,new Val<float>(5)), participant.GetComponent<BehaviorMecanim>().Node_OrientTowards(position), new LeafWait(1000));
     }
 
-	protected Node ST_ThrowBallAt(Transform target) {
+	protected Node ST_BreakDance() {
 		bool dance = false;
 		dance = (Vector3.Distance(participant.transform.position, wander1.position) < 30);
 		if (dance) {
@@ -69,11 +69,7 @@ public class watcher_behavior_tree : MonoBehaviour {
     
     protected Node BuildTreeRoot()
     {
-        Node roaming = new DecoratorLoop(
-            new Sequence(
-                this.ST_ApproachAndLook(this.wander2)
-                 ));
-        Node root = new DecoratorLoop(roaming); 
+		Node root = this.ST_ApproachAndLook(this.wander2); 
         return root;
     }
 
@@ -81,7 +77,7 @@ public class watcher_behavior_tree : MonoBehaviour {
 	{
 		Node roaming = new DecoratorLoop(
 			new Sequence(
-				this.ST_ThrowBallAt(this.wander1)
+				this.ST_BreakDance()
 			));
 		Node root = new DecoratorLoop(roaming); 
 		return root;
