@@ -69,7 +69,9 @@ public class watcher_behavior_tree : MonoBehaviour {
     
     protected Node BuildTreeRoot()
     {
-		Node root = this.ST_ApproachAndLook(this.wander2); 
+		Node roaming = new DecoratorLoop(
+			new Sequence(this.ST_ApproachAndLook(this.wander2)));
+		Node root = new DecoratorLoop(roaming); 
         return root;
     }
 
