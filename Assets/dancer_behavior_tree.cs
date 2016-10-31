@@ -28,22 +28,13 @@ public class dancer_behavior_tree : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-        bool dance = false;
         
-            dance = (Vector3.Distance(participant.transform.position, wander1.position) < 2f);
-            if (dance)
-            {
-                Animator anim = participant.GetComponent<Animator>();
-                anim.SetBool("B_Breakdance",true);
-                //Debug.Log(participant.name + "is dancing with " + dancer.name);
-                
-            }
     }
 
 	protected Node ST_ApproachAndWait(Transform target)
 	{
 		Val<Vector3> position = Val.V (() => target.position); 
-        return new Sequence( participant.GetComponent<BehaviorMecanim>().Node_GoTo(position), new LeafWait(1000));
+        return new Sequence( participant.GetComponent<BehaviorMecanim>().Node_GoToUpToRadius(position,new Val<float>(2)), new LeafWait(1000));
 	}
 
     protected Node ST_Watch(Transform target)
@@ -54,15 +45,16 @@ public class dancer_behavior_tree : MonoBehaviour
     
     protected Node ST_BreakDance()
     {
+        Debug.Log("trying");
         GameObject[] dancers = GameObject.FindGameObjectsWithTag("dancer");
         bool dance = false;
 
-        dance = (Vector3.Distance(participant.transform.position, wander1.position) < 1);
+        dance = (Vector3.Distance(participant.transform.position, wander1.position) < 30);
         if (dance)
         {
             Animator anim = participant.GetComponent<Animator>();
-            anim.SetBool("B_Breakdance", true);
-            //Debug.Log(participant.name + "is dancing with " + dancer.name);
+            //anim.SetBool("B_Breakdance", true);
+            Debug.Log(participant.name + "is close enough ");
 
         }
         Func<bool> closeToDancer = () => (
@@ -83,11 +75,10 @@ public class dancer_behavior_tree : MonoBehaviour
 	{
 		Val<float> pp = Val.V (() => police.transform.position.z);
 		Func<bool> act = () => (police.transform.position.z > 10);
-        Node roaming = new DecoratorLoop(
-            new Sequence(
-                this.ST_ApproachAndWait(this.wander2),
-                this.ST_ApproachAndWait(this.wander1)));
-        Node root = new DecoratorLoop ( new Sequence(roaming,this.ST_BreakDance())); 
+        Node roaming = new Sequence(
+                this.ST_ApproachAndWait(this.wander1),
+                this.ST_BreakDance());
+        Node root = new DecoratorLoop (roaming); 
 		return root;
 	}
 }
