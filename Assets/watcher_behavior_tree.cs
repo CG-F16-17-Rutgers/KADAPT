@@ -5,6 +5,7 @@ using TreeSharpPlus;
 
 public class watcher_behavior_tree : MonoBehaviour {
     public Transform wander1;
+	public Transform wander2;
     public GameObject participant;
     GameObject[] dancers;
 	private float time = 30f;
@@ -12,7 +13,6 @@ public class watcher_behavior_tree : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-		
         dancers = GameObject.FindGameObjectsWithTag("dancer");
         behaviorAgent = new BehaviorAgent(this.BuildTreeRoot());
         BehaviorManager.Instance.Register(behaviorAgent);
@@ -71,7 +71,7 @@ public class watcher_behavior_tree : MonoBehaviour {
     {
         Node roaming = new DecoratorLoop(
             new Sequence(
-                this.ST_ApproachAndLook(this.wander1)
+                this.ST_ApproachAndLook(this.wander2)
                  ));
         Node root = new DecoratorLoop(roaming); 
         return root;
