@@ -30,7 +30,9 @@ public class dancer_behavior_tree : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-        
+		if (Input.GetMouseButtonDown(0)) {
+			behaviorAgent.StopBehavior();
+		}
     }
 
 	public void timerStart() {
