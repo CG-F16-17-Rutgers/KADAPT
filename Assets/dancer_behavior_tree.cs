@@ -16,6 +16,7 @@ public class dancer_behavior_tree : MonoBehaviour
 	public GameObject police;
 	private BehaviorAgent behaviorAgent;
     GameObject[] dancers;
+	private float time = 30f;
     // Use this for initialization
     void Start ()
 	{
@@ -23,6 +24,7 @@ public class dancer_behavior_tree : MonoBehaviour
         behaviorAgent = new BehaviorAgent (this.BuildTreeRoot ());
 		BehaviorManager.Instance.Register (behaviorAgent);
 		behaviorAgent.StartBehavior ();
+		timerStart ();
 	}
 
 	// Update is called once per frame
@@ -30,6 +32,19 @@ public class dancer_behavior_tree : MonoBehaviour
 	{
         
     }
+
+	public void timerStart() {
+		InvokeRepeating ("Countdown", 1.0f, 1.0f);
+	}
+
+	void Countdown () {
+		time--;
+		if (time == 0) {
+			CancelInvoke ("Countdown");
+			behaviorAgent.StopBehavior ();
+			Debug.Log ("timer expired");
+		}
+	}
 
 	protected Node ST_ApproachAndWait(Transform target)
 	{
@@ -50,13 +65,12 @@ public class dancer_behavior_tree : MonoBehaviour
         bool dance = false;
 
         dance = (Vector3.Distance(participant.transform.position, wander1.position) < 30);
-        if (dance)
-        {
-            Animator anim = participant.GetComponent<Animator>();
-            //anim.SetBool("B_Breakdance", true);
-            Debug.Log(participant.name + "is close enough ");
+		if (dance) {
+			Animator anim = participant.GetComponent<Animator> ();
+			//anim.SetBool("B_Breakdance", true);
+			Debug.Log (participant.name + "is close enough ");
 
-        }
+		}
         Func<bool> closeToDancer = () => (
           dance
         );
@@ -78,7 +92,7 @@ public class dancer_behavior_tree : MonoBehaviour
         Node roaming = new Sequence(
                 this.ST_ApproachAndWait(this.wander1),
                 this.ST_BreakDance());
-        Node root = new DecoratorLoop (roaming); 
+        Node root = new DecoratorLoop (roaming);
 		return root;
 	}
 }
