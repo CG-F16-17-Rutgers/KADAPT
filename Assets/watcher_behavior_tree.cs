@@ -7,7 +7,7 @@ public class watcher_behavior_tree : MonoBehaviour {
     public Transform wander1;
     public GameObject participant;
     GameObject[] dancers;
-	private float time = 60f;
+	private float time = 30f;
     private BehaviorAgent behaviorAgent;
     // Use this for initialization
     void Start()
@@ -27,6 +27,7 @@ public class watcher_behavior_tree : MonoBehaviour {
 			behaviorAgent = new BehaviorAgent(this.BuildTreeRoot2());
 			BehaviorManager.Instance.Register(behaviorAgent);
 			behaviorAgent.StartBehavior();
+			timerStart ();
 		}
     }
 
