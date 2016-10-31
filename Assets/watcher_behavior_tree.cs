@@ -5,14 +5,7 @@ using TreeSharpPlus;
 
 public class watcher_behavior_tree : MonoBehaviour {
     public Transform wander1;
-    public Transform wander2;
-    public Transform wander3;
-    public Transform wander4;
-    public Transform wander5;
-    public Transform wander6;
-    public Transform wander7;
     public GameObject participant;
-    public GameObject police;
     GameObject[] dancers;
 
     private BehaviorAgent behaviorAgent;
@@ -31,11 +24,6 @@ public class watcher_behavior_tree : MonoBehaviour {
        
     }
 
-    protected Node ST_ApproachAndWait(Transform target)
-    {
-        Val<Vector3> position = Val.V(() => target.position);
-        return new Sequence(participant.GetComponent<BehaviorMecanim>().Node_GoTo(position), new LeafWait(1000));
-    }
     protected Node ST_ApproachAndLook(Transform target)
     {
         Val<Vector3> position = Val.V(() => target.position);
@@ -50,11 +38,9 @@ public class watcher_behavior_tree : MonoBehaviour {
         {
             Animator anim = dancer.GetComponent<Animator>();
             bool isDancing = anim.GetBool("B_Breakdance");
-            Debug.Log(isDancing);
             watch = (Vector3.Distance(dancer.transform.position, participant.transform.position) < 5) && isDancing;
             if (watch)
             {
-                Debug.Log(participant.name + " is watching " + dancer.name);
                 position = Val.V(() => dancer.transform.position);
                 duration = 1000;
                 break;
@@ -72,14 +58,10 @@ public class watcher_behavior_tree : MonoBehaviour {
     }
     protected Node BuildTreeRoot()
     {
-        Val<float> pp = Val.V(() => police.transform.position.z);
-        Func<bool> act = () => (police.transform.position.z > 10);
         Node roaming = new DecoratorLoop(
             new Sequence(
                 this.ST_ApproachAndLook(this.wander1)
                  ));
-
-        Node trigger = new DecoratorLoop(new LeafAssert(act));
         Node root = new DecoratorLoop(roaming); 
         return root;
     }
