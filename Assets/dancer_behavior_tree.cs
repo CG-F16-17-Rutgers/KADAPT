@@ -37,7 +37,7 @@ public class dancer_behavior_tree : MonoBehaviour
 		if (time == 0) {
 			CancelInvoke ("Countdown");
 			behaviorAgent.StopBehavior ();
-			Debug.Log ("timer expired");
+			Debug.Log ("timer for dancers expired");
 		}
 	}
 
