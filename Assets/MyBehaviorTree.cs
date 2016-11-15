@@ -35,9 +35,20 @@ public class MyBehaviorTree : MonoBehaviour
 	{
 	
 	}
+    //this method is currently acting strangely
+    protected Node ST_RunAndWait(GameObject obj, Transform target)
+    {
+        obj.GetComponent<UnitySteeringController>().maxSpeed = 10f;
+        //obj.GetComponent<NavMeshAgent>().speed = 10;
+        Val<Vector3> position = Val.V(() => target.position);
+        Val<float> radius = Val.V(() => 3f);
+        return new Sequence(obj.GetComponent<BehaviorMecanim>().Node_GoTo(position),
+            new LeafWait(1000));
+    }
 
-	protected Node ST_ApproachAndWait(GameObject obj, Transform target)
+    protected Node ST_ApproachAndWait(GameObject obj, Transform target)
 	{
+        obj.GetComponent<UnitySteeringController>().maxSpeed = .6f;
         Val<Vector3> position = Val.V (() => target.position);
         Val<float> radius = Val.V(() => 3f);
         return new Sequence(obj.GetComponent<BehaviorMecanim>().Node_GoTo(position),
@@ -78,6 +89,7 @@ public class MyBehaviorTree : MonoBehaviour
                             new Sequence(
                                 this.ST_ApproachAndWait(talkTarget, this.wander1),
                                 talkTarget.GetComponent<BehaviorMecanim>().ST_TurnToFace(Val.V(() => participant.transform.position)),
+                                new LeafWait(3000),
                                 this.ST_TakeSword(), new LeafWait(1000),
                                 new SequenceParallel(this.ST_ApproachAndWait(talkTarget, this.desertStation),
                                         this.ST_ApproachAndWait(wanderer1, this.surround1),
