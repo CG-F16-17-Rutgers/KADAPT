@@ -61,12 +61,12 @@ public class BehaviorMecanim : MonoBehaviour
     ///// <summary>
     ///// Approaches a target with a certain speed
     ///// </summary>
-    //public Node Node_GoTo(Val<Vector3> targ, Val<float> speed)
+   // public Node Node_GoTo(Val<Vector3> targ, Val<float> speed)
     //{
-    //    this.Character.SetSpeed(speed.Value);
-    //    return new LeafInvoke(
-    //        () => this.Character.NavGoTo(targ),
-    //        () => this.Character.NavStop());
+       // this.Character.SetSpeed(speed.Value);
+      // return new LeafInvoke(
+      //     () => this.Character.NavGoTo(targ),
+     //      () => this.Character.NavStop());
     //}
 
     /// <summary>
@@ -105,7 +105,7 @@ public class BehaviorMecanim : MonoBehaviour
             {
                 Vector3 targPos = targ.Value;
                 Vector3 curPos = this.transform.position;
-                if ((targPos - curPos).magnitude < dist.Value)
+                if ((targPos - curPos).magnitude <= dist.Value)
                 {
                     this.Character.NavStop();
                     return RunStatus.Success;
