@@ -392,6 +392,9 @@ public class BodyMecanim : MonoBehaviour
         case "DUCK":
             this.animator.SetBool("B_Duck", isActive);
             break;
+        case "JAB":
+            this.animator.SetBool("B_Jabbing", isActive);
+            break;
 		}
 	}
 
