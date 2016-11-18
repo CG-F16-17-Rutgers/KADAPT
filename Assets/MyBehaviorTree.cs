@@ -22,19 +22,36 @@ public class MyBehaviorTree : MonoBehaviour
     public Transform surround1;
     public Transform surround2;
     public Transform surround3;
+    public GameObject rightHand;
+    public Transform rightHandPosition;
+    public GameObject swordText;
+    public GameObject treasureText;
+    public GameObject monster;
+    public Transform eat;
+    public Transform watch;
+    public Transform pickup;
+    public Transform eatPosition;
+    public Transform end;
+
     // Use this for initialization
     void Start ()
 	{
-		behaviorAgent = new BehaviorAgent (this.BuildTreeRoot ());
+        swordText.GetComponent<TextMesh>().text = "";
+        treasureText.GetComponent<TextMesh>().text = "";
+        behaviorAgent = new BehaviorAgent (this.BuildTreeRoot ());
 		BehaviorManager.Instance.Register (behaviorAgent);
 		behaviorAgent.StartBehavior ();
 	}
-	
+	void SetText(GameObject obj, string s)
+    {
+        obj.GetComponent<TextMesh>().text = s;
+    }
 	// Update is called once per frame
 	void Update ()
 	{
 	
 	}
+    
     //this method is currently acting strangely
     protected Node ST_RunAndWait(GameObject obj, Transform target)
     {
@@ -48,7 +65,7 @@ public class MyBehaviorTree : MonoBehaviour
 
     protected Node ST_ApproachAndWait(GameObject obj, Transform target)
 	{
-        obj.GetComponent<UnitySteeringController>().maxSpeed = .6f;
+        if (!obj.Equals(monster)) { obj.GetComponent<UnitySteeringController>().maxSpeed = 5f; }
         Val<Vector3> position = Val.V (() => target.position);
         Val<float> radius = Val.V(() => 3f);
         return new Sequence(obj.GetComponent<BehaviorMecanim>().Node_GoTo(position),
@@ -60,12 +77,24 @@ public class MyBehaviorTree : MonoBehaviour
             talkTarget.GetComponent<BehaviorMecanim>().ST_TurnToFace(sword.transform.position),
             new LeafWait(500),
             ST_ApproachAndWait(talkTarget, swordPosition),
-            new LeafInvoke(() => talkTarget.GetComponent<InteractionSystem>().StartInteraction(FullBodyBipedEffector.RightHand, sword, true)
-            )   
+             talkTarget.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "pickupright")), Val.V(() => 1000L)),
+            new LeafInvoke(() => swordInHand())
             );
         
     }
-
+    void swordInHand()
+    {
+        sword.transform.parent = rightHandPosition.transform;
+        sword.transform.rotation = rightHandPosition.rotation;
+        sword.transform.position = rightHandPosition.transform.position;
+    }
+    void pickupAndKill()
+    {
+        wanderer2.transform.parent = eatPosition.transform;
+        wanderer2.transform.rotation = eatPosition.rotation;
+        wanderer2.transform.position = eatPosition.transform.position;
+    }
+    
     protected Node ST_kill(GameObject killer, GameObject victim)
     {
      
@@ -78,7 +107,23 @@ public class MyBehaviorTree : MonoBehaviour
             victim.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "dying")), Val.V(() => 1000L))
            );
     }
-	protected Node BuildTreeRoot()
+    protected Node ST_wander2Reveal(GameObject killer, GameObject victim)
+    {
+
+        return new Sequence(
+            new SequenceParallel(
+                killer.GetComponent<BehaviorMecanim>().ST_TurnToFace(Val.V(() => victim.transform.position)),
+                 victim.GetComponent<BehaviorMecanim>().ST_TurnToFace(Val.V(() => killer.transform.position))
+               ),
+            victim.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "stayaway")), Val.V(() => 500L)),
+           
+            victim.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "stepback")), Val.V(() => 1000L)),
+            new LeafInvoke(() => SetText(treasureText, "Please don't hurt me!\n I'll show you where the treasure lies..."))
+            //killer.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "jab")), Val.V(() => 3000L))
+            //victim.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "dying")), Val.V(() => 1000L))
+           );
+    }
+    protected Node BuildTreeRoot()
 	{
         Node roaming =
                         new SequenceParallel(
@@ -88,9 +133,12 @@ public class MyBehaviorTree : MonoBehaviour
                             ),
                             new Sequence(
                                 this.ST_ApproachAndWait(talkTarget, this.wander1),
+                                new LeafInvoke(() => SetText(swordText, "It's dangerous out there!\n Take a sword...")),
                                 talkTarget.GetComponent<BehaviorMecanim>().ST_TurnToFace(Val.V(() => participant.transform.position)),
                                 new LeafWait(3000),
+                                new LeafInvoke(() => SetText(swordText, "")),
                                 this.ST_TakeSword(), new LeafWait(1000),
+
                                 new SequenceParallel(this.ST_ApproachAndWait(talkTarget, this.desertStation),
                                         this.ST_ApproachAndWait(wanderer1, this.surround1),
                                            this.ST_ApproachAndWait(wanderer2, this.surround2),
@@ -98,8 +146,43 @@ public class MyBehaviorTree : MonoBehaviour
 
                                     ),
                                     this.ST_kill(talkTarget, wanderer1),
-                                    this.ST_kill(talkTarget, wanderer2),
-                                    this.ST_kill(talkTarget, wanderer3)
+                                    this.ST_kill(talkTarget, wanderer3),
+                                    this.ST_wander2Reveal(talkTarget, wanderer2),
+                                    new LeafWait(3000),
+                                    new LeafInvoke(() => SetText(treasureText, "")),
+                                    new SequenceParallel(
+                                        this.ST_ApproachAndWait(wanderer2, eat),
+                                        this.ST_ApproachAndWait(talkTarget, watch)
+                                    ),
+                                    new LeafWait(1000),
+                                    this.ST_ApproachAndWait(talkTarget, pickup),
+                                    new LeafWait(3000),
+                                     monster.GetComponent<BehaviorMecanim>().ST_TurnToFace(Val.V(() => talkTarget.transform.position)),
+                                     new LeafWait(500),
+                                     monster.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "roar")), Val.V(() => 1000L)),
+                                     talkTarget.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "stepback")), Val.V(() => 1000L)),
+                                     this.ST_ApproachAndWait(monster, pickup.transform),
+                                     monster.GetComponent<BehaviorMecanim>().ST_TurnToFace(Val.V(() => talkTarget.transform.position)),
+                                     talkTarget.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "fight")), Val.V(() => 1000L)),
+                                     new SequenceParallel(
+                                         new Sequence(
+                                             talkTarget.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "duck")), Val.V(() => 1000L)),
+                                             talkTarget.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "duck")), Val.V(() => 1000L))
+
+                                         ),
+                                     monster.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "jab")), Val.V(() => 1000L)),
+                                     monster.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "roar")), Val.V(() => 1000L))
+                                    ),
+                                     new LeafWait(1000),
+                                     talkTarget.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "jab")), Val.V(() => 1000L)),
+                                     talkTarget.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "jab")), Val.V(() => 1000L)),
+                                      monster.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "dying")), Val.V(() => 1000L)),
+                                      new LeafWait(1000),
+                                      this.ST_ApproachAndWait(talkTarget,end),
+                                      talkTarget.GetComponent<BehaviorMecanim>().ST_PlayBodyGesture((Val.V(() => "breakdance")), Val.V(() => 4000L))
+
+
+
 
                                 )
                                 

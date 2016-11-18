@@ -395,7 +395,13 @@ public class BodyMecanim : MonoBehaviour
         case "JAB":
             this.animator.SetBool("B_Jabbing", isActive);
             break;
-		}
+        case "STAYAWAY":
+            this.animator.SetBool("B_StayAway", isActive);
+            break;
+        case "ROAR":
+            this.animator.SetBool("F_Roar", isActive);
+            break;
+        }
 	}
 
     /// <summary>
