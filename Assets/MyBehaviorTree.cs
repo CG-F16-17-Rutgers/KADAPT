@@ -37,6 +37,8 @@ public class MyBehaviorTree : MonoBehaviour
     void Start ()
 	{
         swordText.GetComponent<TextMesh>().text = "";
+		swordPosition.position = new Vector3(UnityEngine.Random.Range(-20, 30), 0.5f, UnityEngine.Random.Range(-20, 20));
+		sword.transform.position = swordPosition.position;
         treasureText.GetComponent<TextMesh>().text = "";
         behaviorAgent = new BehaviorAgent (this.BuildTreeRoot ());
 		BehaviorManager.Instance.Register (behaviorAgent);
