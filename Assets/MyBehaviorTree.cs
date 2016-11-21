@@ -37,8 +37,19 @@ public class MyBehaviorTree : MonoBehaviour
     void Start ()
 	{
         swordText.GetComponent<TextMesh>().text = "";
-		swordPosition.position = new Vector3(UnityEngine.Random.Range(-20, 30), 0.5f, UnityEngine.Random.Range(-20, 20));
-		sword.transform.position = swordPosition.position;
+		swordPosition.position = new Vector3(20.37f, 0f, UnityEngine.Random.Range(-20, 20));
+		sword.transform.position = new Vector3 (swordPosition.position.x + 0.3f, 0.5f, swordPosition.position.z - 1);
+		/*int i = 2; //UnityEngine.Random.Range (1, 5);
+		if (i != 1) {
+			if (i == 2) {
+				swordPosition.transform.position = new Vector3 (24.53f, 0f, 7.26f);
+				sword.transform.position = new Vector3 (25f, 0.5f, 6f);
+			} else if (i == 3) {
+			
+			} else {
+			
+			}
+		}*/
         treasureText.GetComponent<TextMesh>().text = "";
         behaviorAgent = new BehaviorAgent (this.BuildTreeRoot ());
 		BehaviorManager.Instance.Register (behaviorAgent);
