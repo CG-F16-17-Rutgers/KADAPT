@@ -7,10 +7,14 @@ public class hitDetector : MonoBehaviour {
 	void Start () {
 	
 	}
-	void OnCollisionEnter(Collision collision) {
-        if(collision.collider.name == "sword")
-        Debug.Log("HIT!!!");
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.name == "sword")
+        {
+            Debug.Log("HIT!!!");
+            this.GetComponent<Animator>().SetTrigger("B_Dying");
         }
+    }
     // Update is called once per frame
     void Update()
     {
