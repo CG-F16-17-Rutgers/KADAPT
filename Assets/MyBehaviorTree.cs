@@ -33,6 +33,7 @@ public class MyBehaviorTree : MonoBehaviour
     public Transform eatPosition;
     public Transform end;
 
+ 
     // Use this for initialization
     void Start ()
 	{

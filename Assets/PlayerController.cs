@@ -22,7 +22,8 @@ public class PlayerController : MonoBehaviour
         {
             transform.Rotate(0, rotY, 0);
         }
-       
+
+        
         float zForce = Input.GetAxis("Vertical");
         float xForce = Input.GetAxis("Horizontal");
         anim.SetFloat("zForce", zForce);
