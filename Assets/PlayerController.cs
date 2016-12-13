@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
         anim.SetFloat("zForce", zForce);
         anim.SetFloat("xForce", xForce);
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftAlt))
         {
             anim.SetBool("run", true);
         }
