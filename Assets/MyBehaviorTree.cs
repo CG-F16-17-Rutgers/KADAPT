@@ -17,6 +17,7 @@ public class MyBehaviorTree : MonoBehaviour
     public Transform wander8;
     public Transform wander9;
     public Transform wander10;
+	public Transform wander11;
 
     public GameObject participant1;
     public GameObject participant2;
@@ -44,13 +45,13 @@ public class MyBehaviorTree : MonoBehaviour
     private BehaviorAgent behaviorAgent;
     public InteractionSystem int1;
     GameObject killer;
-    
+	private int totalGone;
+	private int totalDone;
 
  
     // Use this for initialization
     void Start ()
 	{
-
         behaviorAgent = new BehaviorAgent (this.BuildTreeRoot ());
 		BehaviorManager.Instance.Register (behaviorAgent);
 		behaviorAgent.StartBehavior ();
@@ -68,7 +69,9 @@ public class MyBehaviorTree : MonoBehaviour
 
 	void Countdown () {
 		time--;
-		if (time == 0) {
+		totalDone = hitDetector.total + totalGone;
+		Debug.Log (totalDone);
+		if (time == 0 || totalDone == 20) {
 			CancelInvoke ("Countdown");
 			saveScore ();
 			SceneManager.LoadScene ("B5end");
@@ -85,6 +88,12 @@ public class MyBehaviorTree : MonoBehaviour
 	{
 	}
     
+	//this should be called when the participants reach wander3
+	void removeObj(GameObject obj) {
+		totalGone++;
+		GameObject.DestroyObject (obj);
+	}
+
     //this method is currently acting strangely
     protected Node ST_RunAndWait(GameObject obj, Transform target)
     {
@@ -98,13 +107,13 @@ public class MyBehaviorTree : MonoBehaviour
 
     protected Node ST_ApproachAndWait(GameObject obj, Transform target)
 	{
-         obj.GetComponent<UnitySteeringController>().maxSpeed = 30f; 
+         obj.GetComponent<UnitySteeringController>().maxSpeed = 5f; 
         Val<Vector3> position = Val.V (() => target.position);
         Val<float> radius = Val.V(() => 3f);
         return new Sequence(obj.GetComponent<BehaviorMecanim>().Node_GoTo(position),
             new LeafWait(1000));
 	}
-
+		
     protected Node ST_checkIfClose(GameObject participant, GameObject killer)
     {
         return new Sequence();
@@ -137,49 +146,49 @@ public class MyBehaviorTree : MonoBehaviour
                             new DecoratorLoop((new DecoratorInvert(new LeafAssert(() => hitDetector.panic)))),
                             //these are the activities before the killer is spotted
                             new DecoratorLoop(new SequenceParallel( 
-                             ST_ApproachAndWait(participant1, wander3),
-                             ST_ApproachAndWait(participant2, wander8),
-                             ST_ApproachAndWait(participant3, wander5),
+                             ST_ApproachAndWait(participant1, wander1),
+                             ST_ApproachAndWait(participant2, wander1),
+                             ST_ApproachAndWait(participant3, wander2),
                              ST_ApproachAndWait(participant4, wander2),
                              ST_ApproachAndWait(participant5, wander3),
                              ST_ApproachAndWait(participant6, wander3),
                              ST_ApproachAndWait(participant7, wander4),
-                             ST_ApproachAndWait(participant8, wander5),
-                             ST_ApproachAndWait(participant9, wander6),
-                             ST_ApproachAndWait(participant10, wander7),
-                             ST_ApproachAndWait(participant11, wander1),
-                             ST_ApproachAndWait(participant12, wander2),
-                             ST_ApproachAndWait(participant13, wander3),
-                             ST_ApproachAndWait(participant14, wander4),
-                             ST_ApproachAndWait(participant15, wander5),
-                             ST_ApproachAndWait(participant16, wander6),
-                             ST_ApproachAndWait(participant17, wander7),
-                             ST_ApproachAndWait(participant18, wander8),
-                             ST_ApproachAndWait(participant19, wander9),
+                             ST_ApproachAndWait(participant8, wander4),
+                             ST_ApproachAndWait(participant9, wander5),
+                             ST_ApproachAndWait(participant10, wander5),
+                             ST_ApproachAndWait(participant11, wander6),
+                             ST_ApproachAndWait(participant12, wander6),
+                             ST_ApproachAndWait(participant13, wander7),
+                             ST_ApproachAndWait(participant14, wander7),
+                             ST_ApproachAndWait(participant15, wander8),
+                             ST_ApproachAndWait(participant16, wander8),
+                             ST_ApproachAndWait(participant17, wander9),
+                             ST_ApproachAndWait(participant18, wander9),
+                             ST_ApproachAndWait(participant19, wander10),
                              ST_ApproachAndWait(participant20, wander10)
                              )))),
                             new DecoratorLoop(new SequenceParallel(
                                 //these are the activites after the killer is spotted
-                                ST_ApproachAndWait(participant1, wander3),
-                             ST_ApproachAndWait(participant2, wander3),
-                             ST_ApproachAndWait(participant3, wander3),
-                             ST_ApproachAndWait(participant4, wander3),
-                             ST_ApproachAndWait(participant5, wander3),
-                             ST_ApproachAndWait(participant6, wander3),
-                             ST_ApproachAndWait(participant7, wander3),
-                             ST_ApproachAndWait(participant8, wander3),
-                             ST_ApproachAndWait(participant9, wander3),
-                             ST_ApproachAndWait(participant10, wander3),
-                             ST_ApproachAndWait(participant11, wander3),
-                             ST_ApproachAndWait(participant12, wander3),
-                             ST_ApproachAndWait(participant13, wander3),
-                             ST_ApproachAndWait(participant14, wander3),
-                             ST_ApproachAndWait(participant15, wander3),
-                             ST_ApproachAndWait(participant16, wander3),
-                             ST_ApproachAndWait(participant17, wander3),
-                             ST_ApproachAndWait(participant18, wander3),
-                             ST_ApproachAndWait(participant19, wander3),
-                             ST_ApproachAndWait(participant20, wander3)
+                             ST_ApproachAndWait(participant1, wander11),
+                             ST_ApproachAndWait(participant2, wander11),
+                             ST_ApproachAndWait(participant3, wander11),
+                             ST_ApproachAndWait(participant4, wander11),
+                             ST_ApproachAndWait(participant5, wander11),
+                             ST_ApproachAndWait(participant6, wander11),
+                             ST_ApproachAndWait(participant7, wander11),
+                             ST_ApproachAndWait(participant8, wander11),
+                             ST_ApproachAndWait(participant9, wander11),
+                             ST_ApproachAndWait(participant10, wander11),
+                             ST_ApproachAndWait(participant11, wander11),
+                             ST_ApproachAndWait(participant12, wander11),
+                             ST_ApproachAndWait(participant13, wander11),
+                             ST_ApproachAndWait(participant14, wander11),
+                             ST_ApproachAndWait(participant15, wander11),
+                             ST_ApproachAndWait(participant16, wander11),
+                             ST_ApproachAndWait(participant17, wander11),
+                             ST_ApproachAndWait(participant18, wander11),
+                             ST_ApproachAndWait(participant19, wander11),
+                             ST_ApproachAndWait(participant20, wander11)
                                 ))
                             )
                         
