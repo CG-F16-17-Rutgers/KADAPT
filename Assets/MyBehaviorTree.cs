@@ -41,7 +41,7 @@ public class MyBehaviorTree : MonoBehaviour
     public GameObject participant20;
     
 	public TextMesh Timer;
-	private float time = 120f;
+	private float time = 300f;
     private BehaviorAgent behaviorAgent;
     public InteractionSystem int1;
     GameObject killer;
