@@ -8,7 +8,7 @@ public class hitDetector : MonoBehaviour {
     public static bool panic = false;
     bool dead = false;
     float timer = 0f;
-    static int total = 0;
+    public static int total = 0;
 	// Use this for initialization
 	void Start () {
         text = text.GetComponent<TextMesh>();

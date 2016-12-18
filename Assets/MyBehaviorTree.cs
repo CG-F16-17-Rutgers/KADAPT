@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using TreeSharpPlus;
 using RootMotion.FinalIK;
+using UnityEngine.SceneManagement;
 
 public class MyBehaviorTree : MonoBehaviour
 {
@@ -38,6 +39,8 @@ public class MyBehaviorTree : MonoBehaviour
     public GameObject participant19;
     public GameObject participant20;
     
+	public TextMesh Timer;
+	private float time = 120f;
     private BehaviorAgent behaviorAgent;
     public InteractionSystem int1;
     GameObject killer;
@@ -51,11 +54,32 @@ public class MyBehaviorTree : MonoBehaviour
         behaviorAgent = new BehaviorAgent (this.BuildTreeRoot ());
 		BehaviorManager.Instance.Register (behaviorAgent);
 		behaviorAgent.StartBehavior ();
+		Timer.text = "Time Left: " + time;
+		timerStart ();
 	}
 	void SetText(GameObject obj, string s)
     {
         obj.GetComponent<TextMesh>().text = s;
     }
+
+	public void timerStart() {
+		InvokeRepeating ("Countdown", 1.0f, 1.0f);
+	}
+
+	void Countdown () {
+		time--;
+		if (time == 0) {
+			CancelInvoke ("Countdown");
+			saveScore ();
+			SceneManager.LoadScene ("B5end");
+		}
+		Timer.text = "Time Left: " + time;
+
+	}
+
+	void saveScore() {
+		PlayerPrefs.SetInt("Kills", hitDetector.total);
+	}
 	// Update is called once per frame
 	void Update ()
 	{
