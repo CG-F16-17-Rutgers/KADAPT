@@ -12,6 +12,7 @@ public class MyBehaviorTree : MonoBehaviour
     public GameObject participant;
 	private BehaviorAgent behaviorAgent;
     public InteractionSystem int1;
+    GameObject killer;
     
 
  
@@ -30,7 +31,6 @@ public class MyBehaviorTree : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-	
 	}
     
     //this method is currently acting strangely
@@ -46,7 +46,7 @@ public class MyBehaviorTree : MonoBehaviour
 
     protected Node ST_ApproachAndWait(GameObject obj, Transform target)
 	{
-         obj.GetComponent<UnitySteeringController>().maxSpeed = 5f; 
+         obj.GetComponent<UnitySteeringController>().maxSpeed = 30f; 
         Val<Vector3> position = Val.V (() => target.position);
         Val<float> radius = Val.V(() => 3f);
         return new Sequence(obj.GetComponent<BehaviorMecanim>().Node_GoTo(position),
@@ -79,10 +79,20 @@ public class MyBehaviorTree : MonoBehaviour
 	{
         Node roaming =
                         new DecoratorLoop(
-                        new Sequence(
-                            ST_ApproachAndWait(participant, wander1),
+                        new Selector(
+                            new DecoratorLoop(
+                            new SequenceParallel(
+                            new DecoratorLoop((new DecoratorInvert(new LeafAssert(() => hitDetector.panic)))),
+                            //these are the activities before the killer is spotted
+                             ST_ApproachAndWait(participant, wander1),
                              ST_ApproachAndWait(participant, wander2)
-                        )
+                             )),
+                            new DecoratorLoop(
+                                //these are the activites after the killer is spotted
+                                ST_ApproachAndWait(participant, wander3)
+                                )
+                            )
+                        
                         );
 		return roaming;
 	}
