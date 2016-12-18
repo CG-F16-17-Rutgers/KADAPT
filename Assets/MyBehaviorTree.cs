@@ -47,11 +47,18 @@ public class MyBehaviorTree : MonoBehaviour
     GameObject killer;
 	private int totalGone;
 	private int totalDone;
-
+	private float nearSafePlaceX1;
+	private float nearSafePlaceX2;
+	private float nearSafePlaceZ1;
+	private float nearSafePlaceZ2;
  
     // Use this for initialization
     void Start ()
-	{
+	{	
+		nearSafePlaceX1 = wander11.position.x + 3;
+		nearSafePlaceX2 = wander11.position.x - 3;
+		nearSafePlaceZ1 = wander11.position.z + 3;
+		nearSafePlaceZ2 = wander11.position.z - 3;
         behaviorAgent = new BehaviorAgent (this.BuildTreeRoot ());
 		BehaviorManager.Instance.Register (behaviorAgent);
 		behaviorAgent.StartBehavior ();
@@ -86,6 +93,15 @@ public class MyBehaviorTree : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		var NPCS = GameObject.FindGameObjectsWithTag ("NPC");
+		var NPCCount = NPCS.Length;
+		foreach (var NPC in NPCS) {
+			if (NPC.transform.position.x < nearSafePlaceX1 && NPC.transform.position.x > nearSafePlaceX2 && NPC.transform.position.z < nearSafePlaceZ1 && NPC.transform.position.z > nearSafePlaceZ2) {
+				Debug.Log ("in safe place");
+				removeObj (NPC);
+			}
+		}
+
 	}
     
 	//this should be called when the participants reach wander3

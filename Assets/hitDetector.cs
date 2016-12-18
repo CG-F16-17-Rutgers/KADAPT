@@ -5,9 +5,11 @@ public class hitDetector : MonoBehaviour {
     public TextMesh text;
     public TextMesh totalKilled;
     public GameObject blood;
+	public Transform safePlace;
     public static bool panic = false;
     bool dead = false;
     public static int total = 0;
+
 	// Use this for initialization
 	void Start () {
         text = text.GetComponent<TextMesh>();
